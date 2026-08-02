@@ -22,7 +22,7 @@ def get_movie(results):
         return None
     movie = results[0]
     return {
-        "tmdb": movie["id"],
+        "tmdb_id": movie["id"],
         "poster": POSTER_URL + movie["poster_path"] if movie["poster_path"] else None,
         "title": movie["title"],
         "overview": movie["overview"],
