@@ -36,8 +36,21 @@ def add_favorite(movie):
 
 def get_favorites():
     con, cur = connect_database()
-    SELECT_FAVORITES = "SELECT * FROM favorites"
-    cur.execute(SELECT_FAVORITES)
+    cur.execute("SELECT * FROM favorites")
     favorites = cur.fetchall()
     con.close()
     return favorites
+
+def is_favorite(movie):
+    con, cur = connect_database()
+    cur.execute("SELECT * FROM favorites WHERE TMDB_ID=?", (movie["tmdb_id"],))
+    result = cur.fetchone()
+    con.close()
+    return result is not None
+
+def delete_favorite(movie):
+    con, cur = connect_database()
+    cur.execute("DELETE FROM favorites WHERE TMDB_ID=?", (movie["tmdb_id"],))
+    con.commit()
+    con.close()
+    

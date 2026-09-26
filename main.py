@@ -1,10 +1,6 @@
-from src.api import search_movie
-from src.api import get_movie
-from src.utils import display_movie
-from src.utils import convert_db_movie
-from src.database import connect_database
-from src.database import create_database
-from src.database import get_favorites
+from src.api import search_movie, get_movie
+from src.utils import display_movie, convert_db_movie
+from src.database import connect_database, create_database, get_favorites
 import streamlit as st
 
 create_database()
@@ -42,9 +38,13 @@ if page == "🔍 Search":
 
 if page == "💖 Favorites":
     st.title("💖 Favorite Movies")
+    fav_movie_name = st.text_input("Search favorites", placeholder="Enter the movie title...")
     favorites = get_favorites()
+    found = False
     for movie in favorites:
         movie = convert_db_movie(movie)
-        display_movie(movie, show_favorite_button=False)
-
-
+        if fav_movie_name.lower() in movie["title"].lower():
+            found = True
+            display_movie(movie, show_favorite_button=False, show_delete_button=True)
+    if not found:
+        st.info("No movies found in favorites")

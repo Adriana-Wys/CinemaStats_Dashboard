@@ -30,6 +30,3 @@ def get_movie(results):
         "release_date": movie["release_date"],
         "language": movie["original_language"]
     }
-
-
-
