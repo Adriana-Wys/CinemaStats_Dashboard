@@ -1,8 +1,8 @@
 from src.api import search_movie
-from src.database import add_favorite, delete_favorite, is_favorite
+from src.database import add_favorite, delete_favorite, is_favorite, add_watchlist, is_watchlist
 import streamlit as st
 
-def display_movie(movie, show_favorite_button=True, show_delete_button=False):
+def display_movie(movie, show_favorite_button=True, show_delete_button=False, show_watchlist_button=True):
     col1, col2 = st.columns([1, 2])
     with col1:
         st.image(f"{movie['poster']}")
@@ -23,6 +23,15 @@ def display_movie(movie, show_favorite_button=True, show_delete_button=False):
                 if add_fav:
                     add_favorite(movie)
                     st.success("Movie added to favorites!")
+                    st.rerun()
+        if show_watchlist_button:
+            if is_watchlist(movie):
+                st.info("Already on watchlist")
+            else:
+                add_towatch = st.button("Add to watchlist ⏳", key=f"watch_{movie['tmdb_id']}")
+                if add_towatch:
+                    add_watchlist(movie)
+                    st.success("Movie added to watchlist")
                     st.rerun()
         if show_delete_button:
             del_fav = st.button("Remove", key=f"delete_{movie['tmdb_id']}")
