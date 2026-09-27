@@ -1,6 +1,6 @@
 from src.api import search_movie, get_movie
 from src.utils import display_movie, convert_db_movie
-from src.database import connect_database, create_database, get_favorites, count_favorites, count_watchlist, get_watchlist
+from src.database import connect_database, create_database, get_favorites, count_favorites, count_watchlist, get_watchlist, get_watched, count_watched
 import streamlit as st
 
 create_database()
@@ -14,7 +14,7 @@ st.set_page_config (
 
 page = st.sidebar.radio(
     "Navigation",
-    ["🔍 Search", "💖 Favorites", "⏳ To Watch"]
+    ["🔍 Search", "💖 Favorites", "⏳ To Watch", "✅ Watched"]
 )
 
 if page == "🔍 Search":
@@ -54,14 +54,34 @@ if page == "💖 Favorites":
         movie = convert_db_movie(movie)
         if fav_movie_name.lower() in movie["title"].lower():
             found = True
-            display_movie(movie, show_favorite_button=False, show_delete_button=True)
+            display_movie(movie, show_favorite_button=False, delete_from="favorites", show_watchlist_button=False, show_watched_button=False)
     if not found:
-        st.info("No movies found in favorites")
+        st.info("No movies found")
 
 if page == "⏳ To Watch":
     st.title("⏳ Watchlist")
     st.write(f"{count_watchlist()} Movies on watchlist")
+    watch_movie_name = st.text_input("Search movie", placeholder="Enter the movie title...")
     watchlist = get_watchlist()
+    found = False
     for movie in watchlist:
         movie = convert_db_movie(movie)
-        display_movie(movie, show_favorite_button=True, show_delete_button=False, show_watchlist_button=False)
+        if watch_movie_name.lower() in movie["title"].lower():
+            found = True
+            display_movie(movie, show_favorite_button=True, delete_from="watchlist", show_watchlist_button=False, show_watched_button=True)
+    if not found:
+        st.info("No movies found")
+
+if page == "✅ Watched":
+    st.title("✅ Watched")
+    st.write(f"You've watched {count_watched()} movies!")
+    watched_movie_name = st.text_input("Search movie", placeholder="Enter the movie title...")
+    watched = get_watched()
+    found = False
+    for movie in watched:
+        movie = convert_db_movie(movie)
+        if watched_movie_name.lower() in movie["title"].lower():
+            found = True
+            display_movie(movie, show_favorite_button=True, delete_from="watched", show_watchlist_button=False, show_watched_button=False)
+    if not found:
+        st.info("No movies found")

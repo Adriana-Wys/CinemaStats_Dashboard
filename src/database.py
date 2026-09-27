@@ -119,6 +119,12 @@ def count_watchlist():
     con.close()
     return result[0]
 
+def delete_watchlist(movie):
+    con, cur = connect_database()
+    cur.execute("DELETE FROM watchlist WHERE TMDB_ID=?", (movie["tmdb_id"],))
+    con.commit()
+    con.close()
+
 def create_database():
     con, cur = connect_database()
     cur.execute("CREATE TABLE IF NOT EXISTS watched(" \
@@ -130,5 +136,47 @@ def create_database():
     "LANGUAGE TEXT NOT NULL," \
     "POSTER TEXT," \
     "OVERVIEW TEXT NOT NULL)")
+    con.commit()
+    con.close()
+
+INSERT_WATCHED = "INSERT INTO watched(TMDB_ID, TITLE, RATING, RELEASE_DATE, LANGUAGE, POSTER, OVERVIEW)VALUES (?, ?, ?, ?, ?, ?, ?)"
+
+def add_watched(movie):
+    con, cur = connect_database()
+    cur.execute(INSERT_WATCHED, (
+        movie["tmdb_id"],
+        movie["title"],
+        movie["rating"],
+        movie["release_date"],
+        movie["language"],
+        movie["poster"],
+        movie["overview"],))
+    con.commit()
+    con.close()
+
+def get_watched():
+    con, cur = connect_database()
+    cur.execute("SELECT * FROM watched")
+    watched = cur.fetchall()
+    con.close()
+    return watched
+
+def is_watched(movie):
+    con, cur = connect_database()
+    cur.execute("SELECT * FROM watched WHERE TMDB_ID=?", (movie["tmdb_id"],))
+    result = cur.fetchone()
+    con.close()
+    return result is not None
+
+def count_watched():
+    con, cur = connect_database()
+    cur.execute("SELECT COUNT(*) FROM watched")
+    result = cur.fetchone()
+    con.close()
+    return result[0]
+
+def delete_watched(movie):
+    con, cur = connect_database()
+    cur.execute("DELETE FROM watched WHERE TMDB_ID=?", (movie["tmdb_id"],))
     con.commit()
     con.close()
